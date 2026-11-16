@@ -25,6 +25,8 @@ export function Footer() {
             <li><Link className="hover:text-gold-300" to="/">{u('navHome')}</Link></li>
             <li><Link className="hover:text-gold-300" to="/units">{u('navUnits')}</Link></li>
             <li><Link className="hover:text-gold-300" to="/gallery">{u('navGallery')}</Link></li>
+            <li><Link className="hover:text-gold-300" to="/register">{u('navRegister')}</Link></li>
+            <li><Link className="hover:text-gold-300" to="/contact">{u('navContact')}</Link></li>
             <li><Link className="hover:text-gold-300" to="/privacy">{u('privacyPolicy')}</Link></li>
           </ul>
           <h2 className="mb-2 mt-6 text-base font-extrabold text-white">{u('footerDevelopers')}</h2>

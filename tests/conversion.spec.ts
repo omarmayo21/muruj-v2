@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { TRACK, PLAIN, mockNetwork, conversions, gtagCalls, submitLead, sha256 } from './helpers';
 
 test.describe('Google Ads conversion — fires only after a real submit', () => {
-  test('(a) real submit → exactly ONE conversion on /thank-you with transaction_id + hashed user_data', async ({ page }) => {
+  test('(a) real submit on / → exactly ONE conversion on /thank-you with transaction_id + hashed user_data', async ({ page }) => {
     const leads = await mockNetwork(page);
     await page.goto(`${TRACK}/?utm_source=google&utm_medium=cpc&utm_campaign=muruj&gclid=TEST-GCLID`);
     expect(await conversions(page)).toHaveLength(0); // nothing on the landing page
@@ -27,8 +27,8 @@ test.describe('Google Ads conversion — fires only after a real submit', () => 
     expect(ud.sha256_phone_number).toBe(sha256('+201001234567'));
     expect(ud.sha256_email_address).toBe(sha256('test.user@example.com'));
 
-    // lead payload carries unit + attribution
-    expect(leads[0].unit).toBeTruthy();
+    // lead payload carries first unit (88 m²) + attribution
+    expect(leads[0].unit).toBe('شقة (تبدأ من 88 م²)');
     expect(leads[0].phone).toBe('+201001234567');
     expect(leads[0].gclid).toBe('TEST-GCLID');
     expect(leads[0].utm_campaign).toBe('muruj');
@@ -103,6 +103,53 @@ test.describe('Google Ads conversion — fires only after a real submit', () => 
     await expect(alert.getByRole('link', { name: /واتساب/ })).toBeVisible();
     expect(await conversions(page)).toHaveLength(0);
   });
+
+  test('(g) /register submit → sends source_page=register, redirects to /thank-you, fires conversion once', async ({ page }) => {
+    const leads = await mockNetwork(page);
+    await page.goto(`${TRACK}/register`);
+    const hidden = page.locator('#lead-form input[type="hidden"][name="source_page"]');
+    await expect(hidden).toHaveValue('register');
+
+    await submitLead(page);
+    await page.waitForURL('**/thank-you');
+    await page.waitForTimeout(400);
+
+    expect(leads).toHaveLength(1);
+    expect(leads[0].source_page).toBe('register');
+    const conv = await conversions(page);
+    expect(conv).toHaveLength(1);
+    expect(conv[0].transaction_id).toBe(leads[0].lead_id);
+
+    await page.reload();
+    await page.waitForTimeout(400);
+    expect(await conversions(page)).toHaveLength(0);
+  });
+
+  test('(h) /contact submit → sends source_page=contact + message, redirects to /thank-you, fires conversion once', async ({ page }) => {
+    const leads = await mockNetwork(page);
+    await page.goto(`${TRACK}/contact`);
+    const hidden = page.locator('#lead-form input[type="hidden"][name="source_page"]');
+    await expect(hidden).toHaveValue('contact');
+
+    const msgField = page.locator('#lead-form textarea[name="message"]');
+    await expect(msgField).toBeVisible();
+    await msgField.fill('أرغب في معرفة تفاصيل الوحدات المتاحة بمساحة 88 م²');
+
+    await submitLead(page);
+    await page.waitForURL('**/thank-you');
+    await page.waitForTimeout(400);
+
+    expect(leads).toHaveLength(1);
+    expect(leads[0].source_page).toBe('contact');
+    expect(leads[0].message).toBe('أرغب في معرفة تفاصيل الوحدات المتاحة بمساحة 88 م²');
+    const conv = await conversions(page);
+    expect(conv).toHaveLength(1);
+    expect(conv[0].transaction_id).toBe(leads[0].lead_id);
+
+    await page.reload();
+    await page.waitForTimeout(400);
+    expect(await conversions(page)).toHaveLength(0);
+  });
 });
 
 test.describe('No tracking when VITE_* IDs are empty', () => {
@@ -116,7 +163,7 @@ test.describe('No tracking when VITE_* IDs are empty', () => {
     page.on('pageerror', (e) => errors.push(e.message));
     await page.route('**/api/lead', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' }));
 
-    for (const path of ['/', '/units', '/gallery', '/privacy', '/thank-you']) {
+    for (const path of ['/', '/units', '/gallery', '/register', '/contact', '/privacy', '/thank-you']) {
       await page.goto(`${PLAIN}${path}`, { waitUntil: 'networkidle' });
     }
     // a full submit also must not try to load anything

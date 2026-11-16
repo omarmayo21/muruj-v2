@@ -5,11 +5,12 @@ import { ROUTE_SEO } from '../config/seo';
 import { useLang } from '../i18n/LanguageContext';
 import { KEY_INFO } from '../data/project';
 import { IMAGES } from '../data/images.generated';
-import { SITE, whatsappLink } from '../config/site';
+import { whatsappLink } from '../config/site';
 import { fireLeadConversion, track } from '../lib/analytics';
 import { LEAD_FLAG } from '../lib/leadFlag';
 import { Img } from '../components/Img';
 import { Icon, WhatsAppIcon } from '../components/Icon';
+import { Logo } from '../components/Logo';
 
 export default function ThankYou() {
   const { u, t, lang } = useLang();
@@ -62,12 +63,15 @@ export default function ThankYou() {
     }
   }, []);
 
-  const cards = KEY_INFO.filter((k) => !k.priceOnly || SITE.showPrices);
+  const cards = KEY_INFO;
 
   return (
     <section className="relative overflow-hidden bg-brand-950 py-14 text-white md:py-20">
       <Img image={IMAGES.villasStreet} priority className="absolute inset-0 h-full w-full object-cover opacity-20" sizes="100vw" />
       <div className="container-x relative max-w-4xl text-center">
+        <div className="mb-5 flex justify-center">
+          <Logo light className="h-14 w-auto" />
+        </div>
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gold-400 text-brand-950 shadow-xl">
           <Icon name="check" size={44} strokeWidth={2.6} />
         </span>

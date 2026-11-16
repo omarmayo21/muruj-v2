@@ -13,7 +13,7 @@ import { Lightbox } from '../components/Lightbox';
 import { AmenitiesSection, LeadFormSection, LocationSection } from '../components/sections';
 import { goToForm } from '../lib/cta';
 
-const ALL: ImageAsset[] = Object.values(IMAGES).filter((i) => i.category !== 'logo');
+const ALL: ImageAsset[] = Object.values(IMAGES);
 
 export default function Gallery() {
   const { u, t, lang } = useLang();

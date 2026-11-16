@@ -10,12 +10,18 @@ declare global {
   }
 }
 
-const env = import.meta.env;
-export const GA_ID = (env.VITE_GA_MEASUREMENT_ID || '').trim();
-export const GTM_ID = (env.VITE_GTM_ID || '').trim();
-export const ADS_ID = (env.VITE_GOOGLE_ADS_ID || '').trim();
-export const ADS_CONV_ID = (env.VITE_GOOGLE_ADS_CONVERSION_ID || '').trim();
-export const ADS_CONV_LABEL = (env.VITE_GOOGLE_ADS_CONVERSION_LABEL || '').trim();
+/** Normalize Google Ads ID so it works whether or not it already starts with "AW-" */
+export function normalizeAwId(raw: string): string {
+  const v = (raw || '').trim();
+  if (!v) return '';
+  return /^AW-/i.test(v) ? `AW-${v.slice(3)}` : `AW-${v}`;
+}
+
+export const GA_ID = (import.meta.env?.VITE_GA_MEASUREMENT_ID || '').trim();
+export const GTM_ID = (import.meta.env?.VITE_GTM_ID || '').trim();
+export const ADS_ID = normalizeAwId(import.meta.env?.VITE_GOOGLE_ADS_ID || '');
+export const ADS_CONV_ID = normalizeAwId(import.meta.env?.VITE_GOOGLE_ADS_CONVERSION_ID || '');
+export const ADS_CONV_LABEL = (import.meta.env?.VITE_GOOGLE_ADS_CONVERSION_LABEL || '').trim();
 
 /** true when at least one tag is configured */
 export const TRACKING_ENABLED = !!(GA_ID || GTM_ID || ADS_ID || ADS_CONV_ID);
@@ -79,13 +85,15 @@ export function initAnalytics() {
   }
 
   // ---- gtag.js (GA4 and/or Google Ads) ----
-  // The Ads conversion ID (AW-XXXX) is used for config if VITE_GOOGLE_ADS_ID is empty.
-  const adsConfigId = ADS_ID || ADS_CONV_ID;
-  const primary = GA_ID || adsConfigId;
+  // If VITE_GOOGLE_ADS_ID is empty but VITE_GOOGLE_ADS_CONVERSION_ID exists, use the conversion ID for config as well.
+  const adsIds = [...new Set([ADS_ID, ADS_CONV_ID].filter(Boolean))];
+  const primary = GA_ID || adsIds[0];
   if (primary) {
     window.gtag('js', new Date());
     if (GA_ID) window.gtag('config', GA_ID, { send_page_view: false });
-    if (adsConfigId) window.gtag('config', adsConfigId, { allow_enhanced_conversions: true });
+    for (const id of adsIds) {
+      window.gtag('config', id, { allow_enhanced_conversions: true });
+    }
     inject(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primary)}`);
   }
 }
@@ -128,7 +136,7 @@ export function fireLeadConversion(p: ConversionPayload) {
   const hasUserData = Object.keys(userData).length > 0;
   if (window.gtag && hasUserData) window.gtag('set', 'user_data', userData);
 
-  // Google Ads conversion
+  // Google Ads conversion (skipped silently if either ID or label is missing)
   if (window.gtag && ADS_CONV_ID && ADS_CONV_LABEL) {
     window.gtag('event', 'conversion', {
       send_to: `${ADS_CONV_ID}/${ADS_CONV_LABEL}`,

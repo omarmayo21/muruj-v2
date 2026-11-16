@@ -47,8 +47,15 @@ function seoFiles(): Plugin {
         const html = String(index.source);
         index.source = routeHtml(html, '/', url);
         // lazy route chunks: preload each route's own JS in its HTML shell (removes the JS waterfall)
-        const pageFile: Record<string, string> = { '/units': 'Units', '/gallery': 'Gallery', '/privacy': 'Privacy', '/thank-you': 'ThankYou' };
-        for (const path of ['/units', '/gallery', '/privacy', '/thank-you'] as const) {
+        const pageFile: Record<string, string> = {
+          '/units': 'Units',
+          '/gallery': 'Gallery',
+          '/register': 'Register',
+          '/contact': 'Contact',
+          '/privacy': 'Privacy',
+          '/thank-you': 'ThankYou',
+        };
+        for (const path of ['/units', '/gallery', '/register', '/contact', '/privacy', '/thank-you'] as const) {
           const chunk = Object.values(bundle).find(
             (c) => c.type === 'chunk' && c.facadeModuleId?.replace(/\\/g, '/').endsWith(`/src/pages/${pageFile[path]}.tsx`),
           );
@@ -66,6 +73,8 @@ function seoFiles(): Plugin {
         { loc: '/', priority: '1.0' },
         { loc: '/units', priority: '0.8' },
         { loc: '/gallery', priority: '0.8' },
+        { loc: '/register', priority: '0.9' },
+        { loc: '/contact', priority: '0.7' },
         { loc: '/privacy', priority: '0.3' },
       ];
       const sitemap =

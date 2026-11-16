@@ -16,14 +16,19 @@ const icon = (s) => (s === 'ok' ? '✅' : s === 'not_configured' ? '⚪' : '❌'
 async function main() {
   console.log(`\n▶ Target: ${base}\n`);
 
-  // 1) configuration check (does not send anything)
+  // 1) configuration + optional read-only credential check (/api/health?verify=1)
   try {
-    const h = await fetch(`${base}/api/health`).then((r) => r.json());
-    console.log('1) /api/health');
+    const h = await fetch(`${base}/api/health?verify=1`).then((r) => r.json());
+    console.log('1) /api/health?verify=1');
     console.log(`   smtpReady:         ${h.smtpReady}`);
     console.log(`   googleSheetsReady: ${h.googleSheetsReady}`);
     const missing = Object.entries(h.env || {}).filter(([, v]) => !v).map(([k]) => k);
     if (missing.length) console.log(`   missing env vars:  ${missing.join(', ')}`);
+    if (h.verify) {
+      for (const [k, v] of Object.entries(h.verify)) {
+        console.log(`   verify ${k.padEnd(6)}:     ${icon(v.status)} ${v.status}${v.reason ? ` (${v.reason})` : ''}`);
+      }
+    }
   } catch (e) {
     console.log(`1) /api/health → unreachable (${e.message})`);
   }
@@ -34,7 +39,9 @@ async function main() {
     phone: '+201001234567',
     phone_country: 'EG',
     email: 'test@example.com',
-    unit: 'غير محدد / أريد استشارة',
+    unit: 'شقة (تبدأ من 88 م²)',
+    message: 'رسالة اختبار من scripts/test-lead.mjs',
+    source_page: 'test_script',
     lead_id: `test-${Date.now()}`,
     page_url: `${base}/?utm_source=test_script`,
     referrer: '',

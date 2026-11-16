@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from './_lib/http.js';
 import { leadSchema, type LeadRecord } from './_lib/schema.js';
 import { isRateLimited, recordHit } from './_lib/rateLimit.js';
 import { cairoNow } from './_lib/time.js';
-import { emailConfigured, sheetsConfigured } from './_lib/env.js';
+import { emailConfigured, sheetsConfigured, missingEmailVars, missingSheetsVars } from './_lib/env.js';
 import { sendLeadEmail } from './_lib/email.js';
 import { appendLeadRow } from './_lib/sheets.js';
 import { reasonCode } from './_lib/channels.js';
@@ -96,12 +96,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
   const tasks: { name: 'email' | 'sheets'; run: () => Promise<void> }[] = [];
   if (emailConfigured()) tasks.push({ name: 'email', run: () => sendLeadEmail(lead) });
-  else console.error('[lead] email channel not configured (SMTP_* / EMAIL_TO)');
+  else console.warn(`[lead] email channel skipped — missing env vars: ${missingEmailVars().join(', ')}`);
   if (sheetsConfigured()) tasks.push({ name: 'sheets', run: () => appendLeadRow(lead) });
-  else console.error('[lead] sheets channel not configured (GOOGLE_*)');
+  else console.warn(`[lead] sheets channel skipped — missing env vars: ${missingSheetsVars().join(', ')}`);
 
   if (tasks.length === 0) {
-    console.error('[lead] NO delivery channel configured — lead lost:', JSON.stringify({ ...lead, ip: undefined }));
+    console.error(
+      `[lead] NO delivery channel configured (missing: ${[...missingEmailVars(), ...missingSheetsVars()].join(', ')}) — lead data:`,
+      JSON.stringify({ ...lead, ip: undefined }),
+    );
     return res.status(500).json({ success: false, error: 'not_configured', message: MSG.failed, ...(data.test ? { channels } : {}) });
   }
 

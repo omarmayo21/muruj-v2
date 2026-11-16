@@ -14,6 +14,7 @@ import {
   NEARBY_AXES,
   PAYMENT_PLANS,
   UNIT_CARDS,
+  UNIT_FILTER_CATEGORIES,
   type Amenity,
 } from '../data/project';
 import { Section, SectionHeading } from './ui';
@@ -29,8 +30,8 @@ import { track } from '../lib/analytics';
 export function LeadFormSection({ location, compact = false }: { location: string; compact?: boolean }) {
   const { u, t } = useLang();
   const perks = [
-    { icon: 'tag', text: { ar: 'أحدث الأسعار والوحدات المتاحة', en: 'Latest prices & available units' } },
-    { icon: 'layers', text: { ar: 'المساقط والمساحات المتاحة حالياً', en: 'Currently available layouts & areas' } },
+    { icon: 'tag', text: { ar: 'اعرف التفاصيل والأسعار من فريق المبيعات', en: 'Full unit details from our sales team' } },
+    { icon: 'layers', text: { ar: 'المساقط والمساحات المتاحة حالياً (من 88 م² حتى 479 م²)', en: 'Currently available layouts & areas (88 m² up to 479 m²)' } },
     { icon: 'wallet', text: { ar: 'أنظمة سداد معلنة حتى 6 سنوات', en: 'Published plans up to 6 years' } },
     { icon: 'calendar', text: { ar: 'ترتيب زيارة للمشروع ومعاينة الوحدات', en: 'Arrange a site visit & unit viewing' } },
   ];
@@ -40,7 +41,7 @@ export function LeadFormSection({ location, compact = false }: { location: strin
         {!compact && (
           <div className="order-2 text-white lg:order-1 lg:col-span-2">
             <p className="text-sm font-extrabold text-gold-300">{t({ ar: 'تواصل مع مستشار مبيعات', en: 'Talk to a sales consultant' })}</p>
-            <h2 className="mt-2 text-2xl font-black leading-snug md:text-3xl">{t({ ar: 'احصل على الأسعار وخطط السداد خلال دقائق', en: 'Get prices & payment plans in minutes' })}</h2>
+            <h2 className="mt-2 text-2xl font-black leading-snug md:text-3xl">{t({ ar: 'اعرف التفاصيل والأسعار من فريق المبيعات', en: 'Get unit details & payment plans in minutes' })}</h2>
             <ul className="mt-6 space-y-3.5">
               {perks.map((p) => (
                 <li key={p.icon} className="flex items-center gap-3 text-white/90">
@@ -101,20 +102,52 @@ export function AboutSection() {
 }
 
 /* -------------------- UNIT CARDS -------------------- */
-export function UnitsSection({ showAllLink = true, priorityFirst = false }: { showAllLink?: boolean; priorityFirst?: boolean }) {
+export function UnitsSection({ showAllLink = true, priorityFirst = false, showFilter = false }: { showAllLink?: boolean; priorityFirst?: boolean; showFilter?: boolean }) {
   const { u, t } = useLang();
   const navigate = useNavigate();
+  const [filter, setFilter] = useState<string>('all');
+  const filteredCards = filter === 'all' ? UNIT_CARDS : UNIT_CARDS.filter((c) => c.category === filter);
+
   return (
     <Section id="units" className="bg-stone-50" ariaLabel={u('unitsTitle')}>
       <SectionHeading kicker={t({ ar: 'شقق · دوبلكس · فيلات · إداري', en: 'Apartments · Duplex · Villas · Admin' })} title={u('unitsTitle')} sub={u('unitsSub')} />
+      {showFilter && (
+        <div className="-mx-4 mb-6 overflow-x-auto px-4" role="tablist" aria-label={u('unitsTitle')}>
+          <div className="flex w-max gap-2 mx-auto">
+            {UNIT_FILTER_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                role="tab"
+                aria-selected={filter === cat.id}
+                onClick={() => setFilter(cat.id)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold transition ${filter === cat.id ? 'bg-brand-800 text-white' : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'}`}
+              >
+                {t(cat.label)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {UNIT_CARDS.map((c, i) => {
-          const img = IMAGES[c.image];
-          const isPlan = img.category === 'floorplans';
+        {filteredCards.map((c, i) => {
+          const img = c.image ? IMAGES[c.image] : null;
+          const isPlan = img?.category === 'floorplans';
           return (
             <article key={c.id} className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-              <div className={`relative aspect-[4/3] overflow-hidden ${isPlan ? 'bg-white' : 'bg-stone-200'}`}>
-                <Img image={img} priority={priorityFirst && i === 0} className={`h-full w-full transition duration-500 group-hover:scale-105 ${isPlan ? 'object-contain p-2' : 'object-cover'}`} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+              <div className={`relative aspect-[4/3] overflow-hidden ${img ? (isPlan ? 'bg-white' : 'bg-stone-200') : 'bg-gradient-to-br from-brand-50 via-stone-50 to-gold-100/40'}`}>
+                {img ? (
+                  <Img image={img} priority={priorityFirst && i === 0} className={`h-full w-full transition duration-500 group-hover:scale-105 ${isPlan ? 'object-contain p-2' : 'object-cover'}`} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
+                    <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-md">
+                      <Icon name="ruler" size={32} />
+                    </span>
+                    <p className="mt-3 text-base font-extrabold text-brand-900">{t(c.title)}</p>
+                    <p className="mt-1 text-xs font-semibold text-stone-500">
+                      {t({ ar: 'تفاصيل التقسيمة والمسقط متاحة عبر فريق المبيعات', en: 'Layout and floor plan details available via our sales team' })}
+                    </p>
+                  </div>
+                )}
                 <span className="absolute start-3 top-3 rounded-full bg-brand-900/90 px-3 py-1 text-sm font-extrabold text-gold-200 backdrop-blur">{t(c.areas)}</span>
               </div>
               <div className="flex flex-1 flex-col p-5">
@@ -128,7 +161,7 @@ export function UnitsSection({ showAllLink = true, priorityFirst = false }: { sh
                   ))}
                 </ul>
                 <button onClick={() => goToForm(`unit_card_${c.id}`, navigate)} className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-800 px-5 py-3 font-extrabold text-white transition hover:bg-brand-700">
-                  {u('askPrice')} <Icon name="arrow" size={18} className="rtl:rotate-180" />
+                  {u('askDetails')} <Icon name="arrow" size={18} className="rtl:rotate-180" />
                 </button>
               </div>
             </article>
@@ -280,7 +313,7 @@ export function PaymentSection() {
           </article>
         ))}
       </div>
-      <p className="mt-6 text-center text-xs text-white/55">{t({ ar: 'أنظمة السداد والأسعار تختلف حسب المشروع الداخلي والوحدة، وتتحدد نهائياً عند تأكيد الوحدة.', en: 'Plans and prices vary by sub-project and unit and are confirmed per unit.' })}</p>
+      <p className="mt-6 text-center text-xs text-white/70">{t({ ar: 'أنظمة سداد مرنة، تواصل معنا لمعرفة التفاصيل والأسعار من فريق المبيعات.', en: 'Flexible payment plans — contact our sales team for full details.' })}</p>
       <div className="mt-6 text-center">
         <button onClick={() => goToForm('payment_section', navigate)} className="btn-gold inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-lg font-extrabold">
           {u('bookNow')} <Icon name="arrow" size={20} className="rtl:rotate-180" />

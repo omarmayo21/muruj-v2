@@ -12,8 +12,12 @@ import { captureAttribution } from './lib/attribution';
 // every other page is its own chunk, prefetched when the browser is idle.
 const loadUnits = () => import('./pages/Units');
 const loadGallery = () => import('./pages/Gallery');
+const loadRegister = () => import('./pages/Register');
+const loadContact = () => import('./pages/Contact');
 const Units = lazy(loadUnits);
 const Gallery = lazy(loadGallery);
+const Register = lazy(loadRegister);
+const Contact = lazy(loadContact);
 const ThankYou = lazy(() => import('./pages/ThankYou'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 
@@ -23,6 +27,8 @@ function usePrefetchRoutes() {
     const run = () => {
       void loadUnits();
       void loadGallery();
+      void loadRegister();
+      void loadContact();
     };
     const id = w.requestIdleCallback ? w.requestIdleCallback(run, { timeout: 4000 }) : window.setTimeout(run, 2500);
     return () => {
@@ -74,8 +80,10 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/units" element={<Units />} />
             <Route path="/gallery" element={<Gallery />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/thank-you" element={<ThankYou />} />
-            {/* legal page — footer only, not part of the 4-page navigation */}
+            {/* legal page — footer only, not part of the main navigation */}
             <Route path="/privacy" element={<Privacy />} />
             {/* 404 → home (not a page of its own) */}
             <Route path="*" element={<Navigate to="/" replace />} />

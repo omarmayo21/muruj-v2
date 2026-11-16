@@ -28,25 +28,23 @@ export interface KeyInfo {
   label: L;
   value: L;
   note?: L;
-  priceOnly?: boolean;
 }
 export const KEY_INFO: KeyInfo[] = [
   { icon: 'pin', label: { ar: 'الموقع', en: 'Location' }, value: { ar: 'سموحة – أمام جرين بلازا', en: 'Smouha – opposite Green Plaza' } }, // S1
   { icon: 'area', label: { ar: 'المساحة الإجمالية', en: 'Total land area' }, value: { ar: '182 فدان', en: '182 feddans' } }, // S1 S4
   { icon: 'building', label: { ar: 'أنواع الوحدات', en: 'Unit types' }, value: { ar: 'شقق · دوبلكس · فيلات · إداري وطبي', en: 'Apartments · Duplex · Villas · Admin & medical' } }, // S4 S2
-  { icon: 'ruler', label: { ar: 'المساحات', en: 'Unit areas' }, value: { ar: 'من 106 م² حتى 479 م²', en: '106 m² up to 479 m²' }, note: { ar: 'حسب المشروع الداخلي', en: 'depending on sub-project' } }, // S4 S2
+  { icon: 'ruler', label: { ar: 'المساحات', en: 'Unit areas' }, value: { ar: 'من 88 م² حتى 479 م²', en: '88 m² up to 479 m²' }, note: { ar: 'حسب المشروع الداخلي', en: 'depending on sub-project' } }, // Owner + S4 S2
   { icon: 'wallet', label: { ar: 'نظام السداد', en: 'Payment plan' }, value: { ar: 'مقدم من 10% · تقسيط حتى 6 سنوات', en: 'From 10% down · up to 6 years' } }, // S1 S4
   { icon: 'calendar', label: { ar: 'الاستلام', en: 'Delivery' }, value: { ar: 'جاهز للسكن · 2027 · 2028', en: 'Ready to move · 2027 · 2028' }, note: { ar: 'حسب الوحدة', en: 'per unit' } }, // S1 S2 S4
   { icon: 'users', label: { ar: 'المطورون', en: 'Developers' }, value: { ar: 'تشييد · الغنيمي · MWA · الفرات', en: 'Tasheed · El Ghoniemy · MWA · Alforat' } }, // S2 S4 S3
-  { icon: 'tag', label: { ar: 'الأسعار', en: 'Prices' }, value: { ar: 'تبدأ من 5,890,000 ج.م', en: 'From EGP 5,890,000' }, note: { ar: 'أسعار استرشادية', en: 'indicative' }, priceOnly: true }, // S1
 ];
 
 /* ---------------- ABOUT ---------------- */
 export const ABOUT = {
   paragraphs: [
     {
-      ar: 'يقع كمبوند مروج في سموحة بالإسكندرية، أمام جرين بلازا مباشرة، وعلى مساحة ضخمة تبلغ 182 فدان. المشروع متكامل ويضم مناطق تجارية وإدارية وحدائق وشقق سكنية.',
-      en: 'Muruj Compound is located in Smouha, Alexandria, directly opposite Green Plaza, on a vast 182-feddan plot. It is an integrated project that includes commercial and administrative zones, gardens and residential apartments.',
+      ar: 'يقع كمبوند مروج في سموحة بالإسكندرية، أمام جرين بلازا مباشرة، وعلى مساحة ضخمة تبلغ 182 فدان. المشروع متكامل ويضم مناطق تجارية وإدارية وحدائق وشقق سكنية وفيلات بمساحات تبدأ من 88 م² حتى 479 م².',
+      en: 'Muruj Compound is located in Smouha, Alexandria, directly opposite Green Plaza, on a vast 182-feddan plot. It is an integrated project that includes commercial and administrative zones, gardens, villas and residential apartments from 88 m² up to 479 m².',
     },
     {
       ar: 'مروج مجتمع واحد عند مدخل سموحة يضم شققاً ودوبلكس وفيلات ومشروعات لمطورين مختلفين، وميزة هذا التنوع أنك تستطيع اختيار التقسيمة ونظام الدفعات وموعد السكن الأقرب لاحتياجك.',
@@ -62,14 +60,14 @@ export const ABOUT = {
     { ar: 'برايم لوكيشن', en: 'Prime location' },
     { ar: 'قريب من جميع الخدمات', en: 'Close to all services' },
     { ar: 'قريب من النوادي والمدارس', en: 'Near clubs and schools' },
-    { ar: 'يضم جميع المساحات', en: 'All unit sizes available' },
+    { ar: 'مساحات من 88 م² حتى 479 م²', en: 'Areas from 88 m² up to 479 m²' },
     { ar: 'متكامل الخدمات', en: 'Fully serviced community' },
   ] as L[],
   // [S4] "مروج مجتمع واحد ومشروعات باختيارات مختلفة"
   pillars: [
     {
       title: { ar: 'اختيارات الشقق', en: 'Apartment choices' },
-      text: { ar: 'يو بارك وڤي مروج وزينيا ومروج هايتس تقدم تقسيمات ومبانٍ وأنظمة سداد مختلفة داخل المجتمع.', en: 'U Park, Vee Muruj, Zinnia and Muruj Heights offer different layouts, buildings and payment plans inside the community.' },
+      text: { ar: 'تبدأ المساحات من 88 م² حتى 479 م²، وتقدم مشروعات يو بارك وڤي مروج وزينيا ومروج هايتس تقسيمات ومبانٍ وأنظمة سداد مختلفة داخل المجتمع.', en: 'Unit areas start from 88 m² up to 479 m², with U Park, Vee Muruj, Zinnia and Muruj Heights offering different layouts, buildings and payment plans inside the community.' },
     },
     {
       title: { ar: 'الفيلات والوحدات المهنية', en: 'Villas & professional units' },
@@ -102,17 +100,38 @@ export const SUB_PROJECTS: SubProject[] = [
   { name: { ar: 'كمبوند الفرات', en: 'Alforat Compound' }, developer: { ar: 'الفرات للتطوير العقاري', en: 'Alforat Development' }, type: { ar: 'فيلات مستقلة', en: 'Standalone villas' }, areas: { ar: '4 نماذج V1 – V4', en: '4 models V1 – V4' } },
 ];
 
-/* ---------------- UNIT TYPE CARDS (home) ---------------- */
+/* ---------------- UNIT TYPE CARDS & FILTER ---------------- */
+export const UNIT_FILTER_CATEGORIES = [
+  { id: 'all', label: { ar: 'الكل', en: 'All' } },
+  { id: 'small', label: { ar: 'مساحات صغيرة', en: 'Compact areas' } },
+  { id: '2br', label: { ar: 'غرفتين', en: '2 bedrooms' } },
+  { id: '3br', label: { ar: '3 غرف', en: '3 bedrooms' } },
+  { id: 'duplex', label: { ar: 'شقق ودوبلكس', en: 'Apartments & Duplex' } },
+  { id: 'villas', label: { ar: 'فيلات وإداري', en: 'Villas & Admin' } },
+] as const;
+
 export interface UnitCard {
   id: string;
+  category: (typeof UNIT_FILTER_CATEGORIES)[number]['id'];
   title: L;
   areas: L;
   details: L[];
-  image: keyof typeof IMAGES;
+  image?: keyof typeof IMAGES;
 }
 export const UNIT_CARDS: UnitCard[] = [
   {
+    id: 'apt88',
+    category: 'small',
+    title: { ar: 'شقة (تبدأ من 88 م²)', en: 'Apartment (from 88 m²)' },
+    areas: { ar: 'تبدأ من 88 م²', en: 'From 88 m²' },
+    details: [
+      { ar: 'مساحات تبدأ من 88 م² داخل كمبوند مروج سموحة (بيانات المالك)', en: 'Areas starting from 88 m² in Muruj Compound Smouha (owner-provided)' },
+      { ar: 'اعرف التفاصيل والأسعار من فريق المبيعات', en: 'Contact our sales team for full details and available layouts' },
+    ],
+  },
+  {
     id: '2br',
+    category: '2br',
     title: { ar: 'شقق غرفتين', en: '2-bedroom apartments' },
     areas: { ar: '106 – 123 م²', en: '106 – 123 m²' },
     details: [
@@ -123,6 +142,7 @@ export const UNIT_CARDS: UnitCard[] = [
   },
   {
     id: '3br',
+    category: '3br',
     title: { ar: 'شقق 3 غرف', en: '3-bedroom apartments' },
     areas: { ar: '131 – 217 م²', en: '131 – 217 m²' },
     details: [
@@ -133,6 +153,7 @@ export const UNIT_CARDS: UnitCard[] = [
   },
   {
     id: 'heights',
+    category: '3br',
     title: { ar: 'مروج هايتس', en: 'Muruj Heights' },
     areas: { ar: '121 – 180 م²', en: '121 – 180 m²' },
     details: [
@@ -143,6 +164,7 @@ export const UNIT_CARDS: UnitCard[] = [
   },
   {
     id: 'duplex',
+    category: 'duplex',
     title: { ar: 'شقق ودوبلكس — يو بارك', en: 'Apartments & duplexes — U Park' },
     areas: { ar: '125 – 479 م²', en: '125 – 479 m²' },
     details: [
@@ -153,6 +175,7 @@ export const UNIT_CARDS: UnitCard[] = [
   },
   {
     id: 'villas',
+    category: 'villas',
     title: { ar: 'فيلات مستقلة — كمبوند الفرات', en: 'Standalone villas — Alforat Compound' },
     areas: { ar: '4 نماذج: V1 · V2 · V3 · V4', en: '4 models: V1 · V2 · V3 · V4' },
     details: [
@@ -163,6 +186,7 @@ export const UNIT_CARDS: UnitCard[] = [
   },
   {
     id: 'admin',
+    category: 'villas',
     title: { ar: 'وحدات إدارية وطبية', en: 'Administrative & medical units' },
     areas: { ar: 'مكاتب 92 م² و151 م²', en: '92 m² & 151 m² offices' },
     details: [
@@ -220,33 +244,7 @@ export const HEIGHTS_TYPES = [
   { building: 'D', types: [['D1', 153], ['D2', 180], ['D3', 178], ['D4', 163]] },
 ] as const;
 
-/* ---------------- SAMPLE OFFERS (indicative prices) ---------------- */
-export interface Offer {
-  project: L;
-  area: number;
-  rooms?: number;
-  baths?: number;
-  price: number;
-  payment: L;
-  status: L;
-}
-const FIN = { ar: 'متشطب · مكتمل الإنشاء', en: 'Finished · completed' };
-export const OFFERS: Offer[] = [
-  { project: { ar: 'مروج — ڤي مروج', en: 'Muruj — Vee Muruj' }, area: 169, price: 6151000, payment: { ar: 'نقداً (إعادة بيع)', en: 'Cash (resale)' }, status: { ar: '—', en: '—' } },
-  { project: { ar: 'مروج', en: 'Muruj' }, area: 151, rooms: 3, baths: 2, price: 6300000, payment: { ar: 'ريسيل — يتحدد الاتفاق على الوحدة', en: 'Resale — terms per unit' }, status: { ar: 'كاملة التشطيب · جاهزة', en: 'Fully finished · ready' } },
-  { project: { ar: 'مروج', en: 'Muruj' }, area: 135, rooms: 3, baths: 3, price: 6300000, payment: { ar: '—', en: '—' }, status: FIN },
-  { project: { ar: 'زينيا مروج', en: 'Zinnia Muruj' }, area: 164, rooms: 3, baths: 3, price: 6500000, payment: { ar: 'نقداً', en: 'Cash' }, status: { ar: 'تشطيب كامل · استلام 2027', en: 'Fully finished · delivery 2027' } },
-  { project: { ar: 'مروج', en: 'Muruj' }, area: 168, rooms: 3, baths: 1, price: 6500000, payment: { ar: 'مقدم 1,300,000 ج.م · 4 سنوات', en: 'EGP 1,300,000 down · 4 years' }, status: { ar: 'تسليم 2027', en: 'Delivery 2027' } },
-  { project: { ar: 'مروج — تشييد', en: 'Muruj — Tasheed' }, area: 140, rooms: 3, baths: 3, price: 6974000, payment: { ar: '—', en: '—' }, status: FIN },
-  { project: { ar: 'مروج — فيو النادي', en: 'Muruj — club view' }, area: 145, rooms: 3, baths: 3, price: 7500000, payment: { ar: '—', en: '—' }, status: FIN },
-  { project: { ar: 'مروج', en: 'Muruj' }, area: 150, rooms: 3, baths: 2, price: 8250000, payment: { ar: 'دفعة أولى 1,650,000 ج.م والباقي على 4 سنوات (16 قسط ربع سنوي × 412,500 ج.م)', en: 'EGP 1,650,000 first payment, balance over 4 years (16 quarterly × EGP 412,500)' }, status: { ar: 'كامل التشطيب · استلام 2028', en: 'Fully finished · delivery 2028' } },
-  { project: { ar: 'يو بارك', en: 'U Park' }, area: 151, price: 8758000, payment: { ar: 'مقدم 10% (875,800 ج.م) والباقي على 4 سنوات', en: '10% down (EGP 875,800), balance over 4 years' }, status: { ar: 'تحت الإنشاء', en: 'Under construction' } },
-  { project: { ar: 'مروج هايتس', en: 'Muruj Heights' }, area: 169, rooms: 3, baths: 3, price: 8788000, payment: { ar: 'تقسيط', en: 'Installments' }, status: { ar: 'سوبر لوكس', en: 'Super lux' } },
-  { project: { ar: 'زينيا مروج', en: 'Zinnia Muruj' }, area: 172, rooms: 3, baths: 2, price: 9300000, payment: { ar: 'مقدم 1,860,000 ج.م (20%) والباقي على 5 سنوات', en: 'EGP 1,860,000 down (20%), balance over 5 years' }, status: { ar: 'الدور السادس · كامل التشطيب', en: '6th floor · fully finished' } },
-  { project: { ar: 'مروج', en: 'Muruj' }, area: 217, rooms: 3, baths: 2, price: 12586000, payment: { ar: 'مقدم 1,258,600 ج.م · 4 سنوات', en: 'EGP 1,258,600 down · 4 years' }, status: { ar: 'تسليم 2027', en: 'Delivery 2027' } },
-];
-
-/* ---------------- PAYMENT PLANS ---------------- */
+/* ---------------- PAYMENT PLANS (non-monetary only) ---------------- */
 export interface PaymentPlan {
   title: L;
   highlight: L;
@@ -266,24 +264,23 @@ export const PAYMENT_PLANS: PaymentPlan[] = [
     highlight: { ar: '10% مقدم', en: '10% down payment' },
     lines: [
       { ar: 'الباقي على 4 سنوات', en: 'Balance over 4 years' },
-      { ar: 'مثال: 151 م² بإجمالي 8,758,000 ج.م — مقدم 875,800 ج.م', en: 'e.g. 151 m² at EGP 8,758,000 — EGP 875,800 down' },
+      { ar: 'شقق ودوبلكس تحت الإنشاء', en: 'Apartments & duplexes under construction' },
     ],
   },
   {
     title: { ar: 'زينيا مروج', en: 'Zinnia Muruj' },
     highlight: { ar: '20% مقدم', en: '20% down payment' },
     lines: [
-      { ar: 'رصيد السعر على 5 سنوات', en: 'Balance over 5 years' },
-      { ar: 'مثال: 172 م² بإجمالي 9,300,000 ج.م — مقدم 1,860,000 ج.م', en: 'e.g. 172 m² at EGP 9,300,000 — EGP 1,860,000 down' },
+      { ar: 'تقسيط المتبقي على 5 سنوات', en: 'Balance over 5 years' },
+      { ar: 'تشطيب كامل · استلام 2027', en: 'Fully finished · delivery 2027' },
     ],
   },
   {
-    title: { ar: 'شقة 150 م² — نظام سداد معلن', en: '150 m² apartment — published plan' },
-    highlight: { ar: '16 قسط ربع سنوي', en: '16 quarterly installments' },
+    title: { ar: 'أنظمة سداد مرنة', en: 'Flexible payment options' },
+    highlight: { ar: 'تسهيلات متنوعة', en: 'Tailored schedules' },
     lines: [
-      { ar: 'دفعة أولى 1,650,000 ج.م تشمل المقدم والأوفر', en: 'EGP 1,650,000 first payment incl. down payment & premium' },
-      { ar: 'المتبقي 6,600,000 ج.م على 4 سنوات — القسط 412,500 ج.م', en: 'Remaining EGP 6,600,000 over 4 years — EGP 412,500 each' },
-      { ar: 'استلام الوحدة 2028', en: 'Delivery 2028' },
+      { ar: 'أنظمة سداد مرنة، تواصل معنا لمعرفة التفاصيل', en: 'Flexible payment plans, contact us for details' },
+      { ar: 'اعرف التفاصيل والأسعار من فريق المبيعات', en: 'Get full details from our sales team' },
     ],
   },
 ];
@@ -355,8 +352,8 @@ export const NEARBY_AXES: L[] = [
 /* ---------------- FAQ ---------------- */
 export const FAQ: { q: L; a: L }[] = [
   {
-    q: { ar: 'هل مروج مشروع واحد أم أكثر من مشروع؟', en: 'Is Muruj one project or several?' },
-    a: { ar: 'مروج مجتمع عمراني على مساحة 182 فدان يضم مشروعات لمطورين مختلفين، بأنواع شقق ودوبلكس وفيلات ووحدات تجارية وإدارية؛ منها يو بارك من تشييد، وڤي مروج من الغنيمي، وزينيا مروج من MWA، وكمبوند الفرات للفيلات.', en: 'Muruj is a 182-feddan community with projects by different developers — apartments, duplexes, villas and commercial/admin units — including U Park (Tasheed), Vee Muruj (El Ghoniemy), Zinnia Muruj (MWA) and Alforat Compound villas.' },
+    q: { ar: 'هل مروج مشروع واحد أم أكثر من مشروع؟ وما المساحات المتاحة؟', en: 'Is Muruj one project or several? What unit areas are available?' },
+    a: { ar: 'مروج مجتمع عمراني على مساحة 182 فدان يضم مشروعات لمطورين مختلفين، بأنواع شقق ودوبلكس وفيلات ووحدات تجارية وإدارية بمساحات من 88 م² حتى 479 م²؛ منها يو بارك من تشييد، وڤي مروج من الغنيمي، وزينيا مروج من MWA، وكمبوند الفرات للفيلات.', en: 'Muruj is a 182-feddan community with projects by different developers — apartments, duplexes, villas and commercial/admin units from 88 m² up to 479 m² — including U Park (Tasheed), Vee Muruj (El Ghoniemy), Zinnia Muruj (MWA) and Alforat Compound villas.' },
   },
   {
     q: { ar: 'أين يقع كمبوند مروج؟', en: 'Where is Muruj located?' },
@@ -364,7 +361,7 @@ export const FAQ: { q: L; a: L }[] = [
   },
   {
     q: { ar: 'ما أنظمة السداد المتاحة؟', en: 'What payment plans are available?' },
-    a: { ar: 'النظام المعلن مقدم 15% وأقساط ربع سنوية على 6 سنوات، وتوجد أنظمة معلنة بمقدم 10% والباقي على 4 سنوات. جدول الدفعات يتحدد لكل وحدة ويُرجى تأكيده مع فريق المبيعات.', en: 'The announced plan is 15% down with quarterly installments over 6 years; some published plans start at 10% down with 4 years. Schedules vary per unit — please confirm with our sales team.' },
+    a: { ar: 'النظام المعلن مقدم 15% وأقساط ربع سنوية على 6 سنوات، وتوجد أنظمة معلنة بمقدم 10% والباقي على 4 سنوات. اعرف التفاصيل والأسعار من فريق المبيعات.', en: 'The announced plan is 15% down with quarterly installments over 6 years; some published plans start at 10% down with 4 years. Contact our sales team for full details.' },
   },
   {
     q: { ar: 'متى الاستلام؟ وهل توجد وحدات جاهزة؟', en: 'When is delivery? Are there ready units?' },

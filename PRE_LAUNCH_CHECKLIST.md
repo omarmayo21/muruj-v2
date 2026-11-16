@@ -8,9 +8,8 @@
 - [ ] `src/config/site.ts` ← `phone` و `phoneDisplay`: رقم الاتصال الحقيقي (بدل `+20XXXXXXXXXX`)
 - [ ] `src/config/site.ts` ← `whatsapp`: رقم الواتساب بدون `+` (مثل `2010xxxxxxxx`)
 - [ ] `src/config/site.ts` ← `siteUrl`: الدومين النهائي (يؤثر على canonical و OG و sitemap و JSON-LD)
-- [ ] `src/config/site.ts` ← `email` (اختياري): بريد يظهر في صفحة الخصوصية لطلبات حذف البيانات
-- [ ] مراجعة `MISSING_DATA.md` و `DATA_CONFLICTS.md` (خاصة نموذج 106 م² "ڤي سيبا 37" وأسعار الوحدات المعروضة)
-- [ ] قرار عرض الأسعار: إبقاؤها كنماذج معلنة أو `showPrices: false`
+- [ ] `src/config/site.ts` ← `email` و `workingHours`: بريد التواصل ومواعيد العمل (تظهر في صفحة `/contact` والفوتر)
+- [ ] مراجعة `MISSING_DATA.md` و `DATA_CONFLICTS.md` (بداية المساحات من 88 م² حتى 479 م²، وعدم وجود أي أرقام مالية)
 
 ## 2) متغيرات البيئة في Vercel (Production + Preview)
 
@@ -27,47 +26,35 @@
 
 - [ ] `https://your-domain.com/api/health` ← `"smtpReady": true` و `"googleSheetsReady": true`
 - [ ] `node scripts/test-lead.mjs https://your-domain.com` ← `✅ email : ok` و `✅ sheets: ok`
-- [ ] الإيميل وصل بعنوان `عميل جديد - كمبوند مروج - …` و Reply-To = إيميل العميل
-- [ ] الصف ظهر في الشيت (14 عموداً، بتوقيت القاهرة)، ثم احذف صف الاختبار
-- [ ] عميل حقيقي من **موبايل** بالرابط `/?utm_source=test&utm_medium=cpc&utm_campaign=test&gclid=TEST123` ← الـ UTM والـ GCLID والوحدة ظاهرة في الإيميل والشيت
+- [ ] الإيميل وصل بعنوان `عميل جديد - كمبوند مروج - …` ويحتوي على صفوف `Message` و `Source Page`
+- [ ] الصف ظهر في الشيت (16 عموداً شاملة `Message` و `Source Page`، بتوقيت القاهرة)، ثم احذف صف الاختبار
+- [ ] تجربة التسجيل من `/register` (`source_page=register`) ومن `/contact` (`source_page=contact` مع رسالة) والتأكد من وصولها للإيميل والشيت
 - [ ] تجربة الفشل: أدخل رقماً خاطئاً ← رسالة خطأ عربية واضحة
 
 ## 4) التتبع والتحويل
 
 - [ ] **Tag Assistant**: GA4 + Google Ads يعملان على كل الصفحات
-- [ ] تسجيل عميل ← في `/thank-you` يظهر **Conversion واحد** مع `transaction_id`
+- [ ] تسجيل عميل من `/` أو `/register` أو `/contact` ← في `/thank-you` يظهر **Conversion واحد** مع `transaction_id`
 - [ ] **Refresh** لصفحة الشكر ← لا يظهر تحويل جديد
 - [ ] فتح `/thank-you` مباشرة ← لا يظهر تحويل
-- [ ] GA4 → DebugView ← حدث `generate_lead`
-- [ ] Google Ads → Conversions ← الحالة تتحول إلى **Recording conversions** خلال 24–48 ساعة
-- [ ] Enhanced conversions مُفعّلة في إعدادات التحويل (طريقة Google tag)
-- [ ] (لو تستخدم GTM) Trigger من نوع Custom Event باسم `lead_conversion`
+- [ ] النقر على الهاتف والواتساب في `/contact` يطلق أحداث `click_call` و `click_whatsapp`
 
 ## 5) المحتوى والامتثال
 
+- [ ] **عدم وجود أي أسعار**: التأكد من خلو الموقع تماماً من أي أرقام مالية أو عملات
 - [ ] **حقوق الصور**: تأكيد حق الاستخدام التجاري لكل صور `public/images/` (موافقة المطور/الوكالة) أو استبدالها
 - [ ] لا توجد أسماء/أرقام/شعارات وسطاء (solvahomes · broker.com.eg · smouha.org)
-- [ ] لا خصومات أو "عرض محدود" أو ضمانات أو استعجال مضلل في الموقع **وفي نصوص الإعلانات**
-- [ ] الفوتر يظهر: "الصور والمعلومات استرشادية وقابلة للتغيير" + "هذا الموقع تسويقي ولا يمثل الموقع الرسمي للمطور"
+- [ ] الفوتر وصفحة `/contact` يظهران: "هذا الموقع تسويقي ولا يمثل الموقع الرسمي للمطور"
 - [ ] صفحة `/privacy`: مراجعة النص وتاريخ التحديث وبيانات التواصل
-- [ ] (اختياري، حسب السوق المستهدف) بانر موافقة الكوكيز ← Consent Mode v2 جاهز في `src/lib/analytics.ts`
 
 ## 6) الجودة والأداء
 
 - [ ] `npm run build` بدون أخطاء
 - [ ] `npm run test:e2e` ← كل الاختبارات تنجح
-- [ ] الموقع على موبايل حقيقي (Android + iPhone): الفورم، أزرار الاتصال والواتساب، لوحة الأرقام في حقل الهاتف
-- [ ] [PageSpeed Insights](https://pagespeed.web.dev/) على الدومين النهائي (موبايل): الأداء ≥ 90 للرئيسية
-- [ ] الروابط: `/` · `/units` · `/gallery` · `/privacy` · `/thank-you` · رابط خاطئ يحوّل للرئيسية
+- [ ] القائمة الرئيسية: `الرئيسية (/) | الوحدات (/units) | المعرض (/gallery) | سجّل الآن (/register) | اتصل بنا (/contact)`
+- [ ] الروابط: `/` · `/units` · `/gallery` · `/register` · `/contact` · `/privacy` · `/thank-you` · رابط خاطئ يحوّل للرئيسية
 
 ## 7) SEO
 
-- [ ] Google Search Console: إضافة الدومين ← رفع `https://your-domain.com/sitemap.xml`
+- [ ] Google Search Console: إضافة الدومين ← رفع `https://your-domain.com/sitemap.xml` (يضم `/`، `/units`، `/gallery`، `/register`، `/contact`، `/privacy` ولا يضم `/thank-you`)
 - [ ] `robots.txt` يمنع `/thank-you` و `/api/`
-- [ ] معاينة المشاركة (واتساب/فيسبوك) تُظهر صورة `og-muruj.jpg` والعنوان الصحيح
-
-## 8) بعد الإطلاق (أول أسبوع)
-
-- [ ] مطابقة عدد صفوف الشيت يومياً مع عدد التحويلات في Google Ads
-- [ ] متابعة Vercel → Logs لأي `delivery_failed` (العميل يُكتب في اللوج كاملاً حتى لا يضيع)
-- [ ] الرد على العملاء بسرعة: Reply مباشرة من الإيميل أو واتساب من الرقم في الشيت

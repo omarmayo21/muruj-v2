@@ -103,7 +103,7 @@ const CONTENT: Record<'ar' | 'en', { title: string; intro: string; blocks: Block
       {
         h: '3. Why we collect it',
         list: [
-          'Only to contact you about Muruj Compound Smouha: answering your enquiry and sending available prices, areas and payment plans.',
+          'Only to contact you about Muruj Compound Smouha: answering your enquiry and sending available unit details, areas and payment plans.',
           'To understand which ads and channels brought you to us and improve our campaigns.',
           'To protect the website from abuse.',
         ],

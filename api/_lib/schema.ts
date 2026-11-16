@@ -50,6 +50,8 @@ export const leadSchema = z.object({
     .unknown()
     .transform((v) => sanitizeText(v, 120))
     .pipe(z.string().min(1, 'unit_required')),
+  message: text(500),
+  source_page: text(60),
   website: text(200), // honeypot
   lead_id: text(64),
   page_url: url(1000),

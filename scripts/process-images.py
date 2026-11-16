@@ -61,8 +61,6 @@ IMAGES = [
   ("planVee106", "raw/sm_vee106.webp", "vee-muruj-2-bedroom-106sqm-floor-plan", "floorplans", "مسقط شقة غرفتين 106 م² في ڤي مروج - ڤي سيبا 37 نموذج 2", "Vee Muruj 2-bedroom 106 m² floor plan - Vee Seba 37 type 2", "smouha.org"),
   ("planZinnia140", "raw/br_floor.webp", "zinnia-muruj-3-bedroom-140sqm-floor-plan", "floorplans", "مسقط شقة 3 غرف 140 م² في زينيا مروج - مبنى A شقة 1", "Zinnia Muruj 3-bedroom 140 m² floor plan - Building A flat 1", "broker.com.eg / smouha.org"),
   ("planHeights", "raw/sm_heights121.png", "muruj-heights-buildings-c-d-floor-plans", "floorplans", "مساقط مروج هايتس للمبنى C والمبنى D بمساحات من 121 إلى 180 م²", "Muruj Heights floor plans for buildings C and D, 121–180 m²", "smouha.org"),
-  # --- logo (developer, used only in the Alforat villas block) ---
-  ("alforatLogo", "raw/af_capture.png", "alforat-developer-logo", "logo", "شعار الفرات للتطوير العقاري", "Alforat Development logo", "alforat.com.eg"),
 ]
 
 def save(im, path, maxw, q):

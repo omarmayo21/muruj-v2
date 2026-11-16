@@ -41,7 +41,6 @@ import type { ImageAsset } from './types';
 //   planVee106: smouha.org
 //   planZinnia140: broker.com.eg / smouha.org
 //   planHeights: smouha.org
-//   alforatLogo: alforat.com.eg
 
 export const IMAGES = {
   "villasStreet": {
@@ -418,13 +417,5 @@ export const IMAGES = {
     "category": "floorplans",
     "srcSm": "/images/muruj-heights-buildings-c-d-floor-plans-sm.webp",
     "srcXs": "/images/muruj-heights-buildings-c-d-floor-plans-xs.webp"
-  },
-  "alforatLogo": {
-    "src": "/images/alforat-developer-logo.webp",
-    "width": 156,
-    "height": 154,
-    "alt": "شعار الفرات للتطوير العقاري",
-    "altEn": "Alforat Development logo",
-    "category": "logo"
   }
 } as const satisfies Record<string, ImageAsset>;

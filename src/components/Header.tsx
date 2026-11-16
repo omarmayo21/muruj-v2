@@ -22,10 +22,12 @@ export function Header() {
   }, []);
   useEffect(() => setOpen(false), [pathname]);
 
-  const links = [
+  const links: { to: string; label: string; cta?: boolean }[] = [
     { to: '/', label: u('navHome') },
     { to: '/units', label: u('navUnits') },
     { to: '/gallery', label: u('navGallery') },
+    { to: '/register', label: u('navRegister'), cta: true },
+    { to: '/contact', label: u('navContact') },
   ];
 
   return (
@@ -41,7 +43,11 @@ export function Header() {
               key={l.to}
               to={l.to}
               end
-              className={({ isActive }) => `rounded-lg px-4 py-2 text-[15px] font-bold transition ${isActive ? 'bg-brand-50 text-brand-800' : 'text-stone-700 hover:bg-stone-100 hover:text-brand-800'}`}
+              className={({ isActive }) =>
+                l.cta
+                  ? 'btn-gold mx-1 rounded-xl px-4 py-2 text-[15px] font-extrabold shadow'
+                  : `rounded-lg px-3.5 py-2 text-[15px] font-bold transition ${isActive ? 'bg-brand-50 text-brand-800' : 'text-stone-700 hover:bg-stone-100 hover:text-brand-800'}`
+              }
             >
               {l.label}
             </NavLink>
@@ -58,7 +64,7 @@ export function Header() {
             <Icon name="phone" size={18} />
             {SITE.phoneDisplay}
           </a>
-          <button onClick={() => goToForm('header_book_now', navigate)} className="btn-gold whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-extrabold shadow sm:px-4 md:px-5 md:text-base">
+          <button onClick={() => goToForm('header_book_now', navigate)} className="btn-gold whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-extrabold shadow sm:px-4 md:px-5 md:text-base lg:border lg:border-brand-800 lg:bg-none lg:bg-brand-800 lg:text-white lg:hover:bg-brand-700">
             {u('bookNow')}
           </button>
           <button className="rounded-lg p-2 text-stone-700 hover:bg-stone-100 lg:hidden" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="mobile-nav" aria-label={u('menu')}>
@@ -69,9 +75,18 @@ export function Header() {
 
       {open && (
         <nav id="mobile-nav" className="border-t border-stone-100 bg-white lg:hidden" aria-label="Mobile">
-          <div className="container-x flex flex-col py-2">
+          <div className="container-x flex flex-col gap-1 py-2">
             {links.map((l) => (
-              <NavLink key={l.to} to={l.to} end className={({ isActive }) => `rounded-lg px-3 py-3 text-base font-bold ${isActive ? 'bg-brand-50 text-brand-800' : 'text-stone-700'}`}>
+              <NavLink
+                key={l.to}
+                to={l.to}
+                end
+                className={({ isActive }) =>
+                  l.cta
+                    ? 'btn-gold my-1 rounded-xl px-4 py-3 text-center text-base font-extrabold shadow'
+                    : `rounded-lg px-3 py-3 text-base font-bold ${isActive ? 'bg-brand-50 text-brand-800' : 'text-stone-700'}`
+                }
+              >
                 {l.label}
               </NavLink>
             ))}

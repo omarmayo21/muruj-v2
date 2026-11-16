@@ -21,11 +21,14 @@ export const SITE = {
     ar: 'مرحباً، مهتم بكمبوند مروج سموحة وأرغب في معرفة التفاصيل',
     en: 'Hello, I am interested in Muruj Compound Smouha and would like more details',
   },
-  /** Optional contact email shown in the footer (leave empty to hide) */
-  email: '',
+  /** Contact email placeholder shown in contact cards & footer */
+  email: 'info@YOUR-DOMAIN.com',
 
-  /** Toggle price display (prices are indicative asking prices from the sources) */
-  showPrices: true,
+  /** Working hours placeholder shown on /contact */
+  workingHours: {
+    ar: 'يومياً من 10:00 صباحاً حتى 10:00 مساءً',
+    en: 'Daily from 10:00 AM to 10:00 PM',
+  },
 
   /**
    * Google Map embed. The 4 source pages do NOT publish exact project
@@ -42,14 +45,18 @@ export const SITE = {
 
 /**
  * Options of the "اختر الوحدة / المساحة" select in the lead form.
- * Based ONLY on unit types/areas published in the sources (see DATA_CONFLICTS.md):
- *  - No 1-bedroom or studio units exist in any source → intentionally not offered.
- *  - 2 bedrooms: 106–123 m² · 3 bedrooms: 131 m² up to 257 m² (top of the published
- *    project range; largest explicit 3-bed listing is 217 m²) · Duplex: up to 479 m²
- *    (top of U Park apartments & duplex range) · Alforat standalone villas V1–V4.
+ *  - First option: 88 m² minimum area provided by the project owner (single easy-to-edit entry).
+ *  - Remaining options based on unit types/areas published in the sources (see DATA_CONFLICTS.md):
+ *    2 bedrooms: 106–123 m² · 3 bedrooms: 131–257 m² · Duplex: up to 479 m² · Alforat villas V1–V4.
  * `value` is exactly what is saved in the email and the Google Sheet.
  */
+export const FIRST_UNIT_OPTION = {
+  value: 'شقة (تبدأ من 88 م²)',
+  label: { ar: 'شقة (تبدأ من 88 م²)', en: 'Apartment (from 88 m²)' },
+} as const;
+
 export const unitOptions: ReadonlyArray<{ value: string; label: { ar: string; en: string } }> = [
+  FIRST_UNIT_OPTION,
   { value: 'غرفتين (106–123 م²)', label: { ar: 'غرفتين (106–123 م²)', en: '2 bedrooms (106–123 m²)' } },
   { value: '3 غرف (131–257 م²)', label: { ar: '3 غرف (131–257 م²)', en: '3 bedrooms (131–257 m²)' } },
   { value: 'دوبلكس (حتى 479 م²)', label: { ar: 'دوبلكس (حتى 479 م²)', en: 'Duplex (up to 479 m²)' } },

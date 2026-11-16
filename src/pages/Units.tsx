@@ -5,8 +5,7 @@ import { ROUTE_SEO } from '../config/seo';
 import { useLang } from '../i18n/LanguageContext';
 import { IMAGES } from '../data/images.generated';
 import type { ImageAsset } from '../data/types';
-import { FLOOR_PLANS, HEIGHTS_TYPES, OFFERS, SUB_PROJECTS, VILLAS } from '../data/project';
-import { SITE } from '../config/site';
+import { FLOOR_PLANS, HEIGHTS_TYPES, SUB_PROJECTS, VILLAS } from '../data/project';
 import { Section, SectionHeading } from '../components/ui';
 import { Img } from '../components/Img';
 import { Icon } from '../components/Icon';
@@ -18,7 +17,6 @@ export default function Units() {
   const { u, t, lang } = useLang();
   const navigate = useNavigate();
   const [lb, setLb] = useState<{ imgs: ImageAsset[]; i: number } | null>(null);
-  const fmt = (n: number) => n.toLocaleString('en-US');
 
   useHead({
     title: ROUTE_SEO['/units'].title[lang],
@@ -39,11 +37,11 @@ export default function Units() {
         </div>
       </header>
 
-      <UnitsSection showAllLink={false} priorityFirst />
+      <UnitsSection showAllLink={false} priorityFirst showFilter />
 
       {/* Sub-projects */}
       <Section id="sub-projects" ariaLabel={u('subProjects')}>
-        <SectionHeading title={u('subProjects')} sub={t({ ar: 'مروج مجتمع يضم مطورين ومشروعات مختلفة — هذا ملخص نطاقات الوحدات لكل مشروع', en: 'Muruj hosts several developers and projects — here is the unit range of each' })} />
+        <SectionHeading title={u('subProjects')} sub={t({ ar: 'مروج مجتمع يضم مطورين ومشروعات مختلفة — المساحات السكنية تبدأ من 88 م² حتى 479 م²', en: 'Muruj hosts several developers and projects — residential areas range from 88 m² up to 479 m²' })} />
         <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
           <table className="w-full min-w-[640px] text-start text-sm">
             <thead className="bg-brand-900 text-white">
@@ -75,7 +73,33 @@ export default function Units() {
       {/* Floor plans */}
       <Section id="floor-plans" className="bg-stone-50" ariaLabel={u('floorPlans')}>
         <SectionHeading title={u('floorPlans')} />
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* 88 m² neutral placeholder card (owner-provided minimum area, no floor plan attached) */}
+          <article className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <div className="flex min-h-[240px] flex-col items-center justify-center bg-gradient-to-br from-brand-50 via-stone-50 to-gold-100/40 p-6 text-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-md">
+                <Icon name="ruler" size={32} />
+              </span>
+              <span className="mt-3 rounded-full bg-brand-900 px-3.5 py-1 text-sm font-extrabold text-gold-200">
+                {t({ ar: 'تبدأ من 88 م²', en: 'From 88 m²' })}
+              </span>
+              <p className="mt-2 text-xs font-semibold text-stone-500">
+                {t({ ar: 'المسقط الهندسي وتوزيع الغرف متاح عبر فريق المبيعات', en: 'Floor plan & room layout available via our sales team' })}
+              </p>
+            </div>
+            <div className="flex flex-1 flex-col border-t border-stone-100 p-5">
+              <h3 className="text-lg font-extrabold text-brand-900">{t({ ar: 'شقة (تبدأ من 88 م²)', en: 'Apartment (from 88 m²)' })}</h3>
+              <p className="text-sm text-stone-500">{t({ ar: 'بيانات المالك — مساحات تبدأ من 88 م²', en: 'Owner-provided data — areas starting from 88 m²' })}</p>
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-stone-600">
+                {t({
+                  ar: 'تتوفر وحدات سكنية تبدأ مساحتها من 88 م² داخل كمبوند مروج سموحة. تواصل مع فريق المبيعات لمعرفة التقسيمة المتاحة والمسقط الهندسي.',
+                  en: 'Residential units starting from 88 m² are available at Muruj Compound Smouha. Contact our sales team for the available layout and floor plan.',
+                })}
+              </p>
+              <button onClick={() => goToForm('floorplan_apt88', navigate)} className="mt-5 w-full rounded-xl bg-brand-800 py-3 font-extrabold text-white hover:bg-brand-700">{u('askDetails')}</button>
+            </div>
+          </article>
+
           {FLOOR_PLANS.map((fp) => {
             const img = IMAGES[fp.image];
             return (
@@ -103,7 +127,7 @@ export default function Units() {
                       ))}
                     </tbody>
                   </table>
-                  <button onClick={() => goToForm(`floorplan_${fp.image}`, navigate)} className="mt-5 w-full rounded-xl bg-brand-800 py-3 font-extrabold text-white hover:bg-brand-700">{u('askPrice')}</button>
+                  <button onClick={() => goToForm(`floorplan_${fp.image}`, navigate)} className="mt-5 w-full rounded-xl bg-brand-800 py-3 font-extrabold text-white hover:bg-brand-700">{u('askDetails')}</button>
                 </div>
               </article>
             );
@@ -132,7 +156,7 @@ export default function Units() {
                 </div>
               ))}
             </div>
-            <button onClick={() => goToForm('heights_types', navigate)} className="mt-6 w-full rounded-xl bg-brand-800 py-3 font-extrabold text-white hover:bg-brand-700">{u('askPrice')}</button>
+            <button onClick={() => goToForm('heights_types', navigate)} className="mt-6 w-full rounded-xl bg-brand-800 py-3 font-extrabold text-white hover:bg-brand-700">{u('askDetails')}</button>
           </div>
         </article>
       </Section>
@@ -160,7 +184,7 @@ export default function Units() {
                       <Icon name="bed" size={18} className="mt-0.5 shrink-0 text-gold-700" /> {t(v.rooms)}
                     </p>
                   </div>
-                  <button onClick={() => goToForm(`villa_${v.code}`, navigate)} className="shrink-0 rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-extrabold text-white hover:bg-brand-700">{u('askPrice')}</button>
+                  <button onClick={() => goToForm(`villa_${v.code}`, navigate)} className="shrink-0 rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-extrabold text-white hover:bg-brand-700">{u('askDetails')}</button>
                 </div>
               </article>
             );
@@ -177,36 +201,6 @@ export default function Units() {
           ))}
         </div>
       </Section>
-
-      {/* Offers / indicative prices */}
-      {SITE.showPrices && (
-        <Section id="offers" className="bg-stone-50" ariaLabel={u('offersTitle')}>
-          <SectionHeading title={u('offersTitle')} sub={u('offersNote')} />
-          <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
-            <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-brand-900 text-white">
-                <tr>
-                  {[u('project'), u('area'), u('roomsBaths'), u('totalPrice'), u('payment'), u('status')].map((h) => (
-                    <th key={h} scope="col" className="px-4 py-3 text-start font-extrabold">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {OFFERS.map((o, i) => (
-                  <tr key={i} className="even:bg-stone-50">
-                    <td className="px-4 py-3 font-bold text-brand-900">{t(o.project)}</td>
-                    <td className="whitespace-nowrap px-4 py-3 font-extrabold">{o.area} {u('sqm')}</td>
-                    <td className="px-4 py-3 text-stone-600">{o.rooms ? `${o.rooms} / ${o.baths ?? '—'}` : '—'}</td>
-                    <td className="whitespace-nowrap px-4 py-3 font-extrabold text-brand-800">{fmt(o.price)} {u('egp')}</td>
-                    <td className="px-4 py-3 text-stone-600">{t(o.payment)}</td>
-                    <td className="px-4 py-3 text-stone-600">{t(o.status)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Section>
-      )}
 
       <LeadFormSection location="units_page" compact />
       <Lightbox images={lb?.imgs ?? []} index={lb ? lb.i : null} onClose={() => setLb(null)} onIndex={(i) => setLb((p) => (p ? { ...p, i } : p))} />

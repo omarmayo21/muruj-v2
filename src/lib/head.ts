@@ -20,7 +20,7 @@ function setMeta(attr: 'name' | 'property', key: string, content: string) {
 }
 
 /** Lightweight per-route <head> manager (title, description, OG, canonical, robots) */
-export function useHead({ title, description, path, noindex, image = '/images/og-muruj.jpg' }: HeadOptions) {
+export function useHead({ title, description, path, noindex, image = '/og-image.jpg' }: HeadOptions) {
   useEffect(() => {
     document.title = title;
     const url = `${SITE.siteUrl}${path}`;
@@ -32,6 +32,7 @@ export function useHead({ title, description, path, noindex, image = '/images/og
     setMeta('property', 'og:image', `${SITE.siteUrl}${image}`);
     setMeta('name', 'twitter:title', title);
     setMeta('name', 'twitter:description', description);
+    setMeta('name', 'twitter:image', `${SITE.siteUrl}${image}`);
     let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!link) {
       link = document.createElement('link');

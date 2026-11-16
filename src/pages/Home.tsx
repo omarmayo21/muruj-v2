@@ -4,7 +4,6 @@ import { useHead } from '../lib/head';
 import { ROUTE_SEO } from '../config/seo';
 import { useLang } from '../i18n/LanguageContext';
 import { Hero } from '../components/Hero';
-import { SITE } from '../config/site';
 import { AboutSection, AmenitiesSection, FAQSection, FinalCTA, LeadFormSection, LocationSection, PaymentSection, UnitsSection } from '../components/sections';
 
 export default function Home() {
@@ -41,7 +40,7 @@ export default function Home() {
       {/* 6. Location */}
       <LocationSection />
       {/* 7. Payment plans */}
-      {SITE.showPrices && <PaymentSection />}
+      <PaymentSection />
       {/* 8. FAQ */}
       <FAQSection />
       {/* 9. Final CTA with the same form */}

@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLang } from '../i18n/LanguageContext';
 import { IMAGES } from '../data/images.generated';
 import { HERO_SLIDES, KEY_INFO } from '../data/project';
-import { SITE } from '../config/site';
 import { Img } from './Img';
 import { Icon } from './Icon';
+import { Logo } from './Logo';
 import { goToForm } from '../lib/cta';
 import { track } from '../lib/analytics';
 
@@ -35,7 +35,7 @@ export function Hero() {
     return () => window.clearInterval(id);
   }, [mountAll, paused, n]);
 
-  const cards = KEY_INFO.filter((k) => !k.priceOnly || SITE.showPrices);
+  const cards = KEY_INFO;
   const nextIcon = dir === 'rtl' ? 'chevronLeft' : 'chevronRight';
   const prevIcon = dir === 'rtl' ? 'chevronRight' : 'chevronLeft';
 
@@ -73,9 +73,12 @@ export function Hero() {
 
         {/* Headline */}
         <div className="container-x absolute inset-x-0 bottom-0 pb-20 md:pb-28">
-          <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-gold-200 backdrop-blur md:text-sm">
-            <Icon name="pin" size={15} /> {u('heroKicker')}
-          </p>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <Logo light className="h-10 w-auto drop-shadow md:h-12" />
+            <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold text-gold-200 backdrop-blur md:text-sm">
+              <Icon name="pin" size={15} /> {u('heroKicker')}
+            </p>
+          </div>
           <h1 className="max-w-3xl text-[2rem] font-black leading-[1.2] text-white drop-shadow md:text-6xl">
             {u('heroTitle')}
             <span className="mt-2 block text-lg font-bold text-gold-300 md:text-2xl">{t({ ar: 'مجتمع متكامل على 182 فدان أمام جرين بلازا', en: 'An integrated 182-feddan community opposite Green Plaza' })}</span>

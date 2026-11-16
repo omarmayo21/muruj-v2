@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { PLAIN } from './helpers';
 
-const ROUTES = ['/', '/units', '/gallery', '/thank-you', '/privacy'];
+const ROUTES = ['/', '/units', '/gallery', '/register', '/contact', '/thank-you', '/privacy'];
 const WIDTHS = [360, 390, 768, 1280];
 
 async function scrollThrough(page: Page) {
@@ -69,22 +69,39 @@ test.describe('Responsive RTL — no horizontal scroll', () => {
 });
 
 test.describe('Navigation & compliance', () => {
-  test('exactly 4 main pages: nav has 3 links (Home/Units/Gallery) + /thank-you; /privacy only in footer', async ({ page }) => {
+  test('header nav has 5 items (/ | /units | /gallery | /register CTA | /contact); /privacy only in footer; no /thank-you link', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto(`${PLAIN}/`);
     const navLinks = await page.locator('header nav a').evaluateAll((as) => as.map((a) => new URL((a as HTMLAnchorElement).href).pathname));
-    expect(navLinks).toEqual(['/', '/units', '/gallery']);
+    expect(navLinks).toEqual(['/', '/units', '/gallery', '/register', '/contact']);
+    const registerNav = page.locator('header nav a[href="/register"]');
+    await expect(registerNav).toHaveText('سجّل الآن');
+    await expect(registerNav).toHaveClass(/btn-gold/);
     expect(await page.locator('header a[href="/privacy"]').count()).toBe(0);
+    expect(await page.locator('a[href="/thank-you"]').count()).toBe(0);
     await expect(page.locator('footer a[href="/privacy"]').first()).toBeVisible();
+    await expect(page.locator('footer a[href="/register"]').first()).toBeVisible();
+    await expect(page.locator('footer a[href="/contact"]').first()).toBeVisible();
   });
 
-  test('footer disclaimers on every page', async ({ page }) => {
+  test('footer disclaimers on every page + logo in header & footer (360px & 1280px screenshots)', async ({ page }) => {
     for (const path of ROUTES) {
       await page.goto(`${PLAIN}${path}`);
       const footer = page.locator('footer');
       await expect(footer).toContainText('الصور والمعلومات استرشادية وقابلة للتغيير');
       await expect(footer).toContainText('هذا الموقع تسويقي ولا يمثل الموقع الرسمي للمطور');
       await expect(footer.locator('a[href="/privacy"]').first()).toBeVisible();
+      await expect(page.locator('header img[alt="شعار كمبوند مروج"]').first()).toBeVisible();
+      await expect(footer.locator('img[alt="شعار كمبوند مروج"]')).toBeVisible();
+    }
+
+    const outDir = 'C:/Users/evoke/.gemini/antigravity/brain/94959d4a-5f0a-4d96-b184-09e7ae2696db';
+    for (const width of [360, 1280]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`${PLAIN}/`, { waitUntil: 'networkidle' });
+      await page.locator('header').first().screenshot({ path: `${outDir}/header-${width}px.png` });
+      await page.locator('footer').scrollIntoViewIfNeeded();
+      await page.locator('footer').screenshot({ path: `${outDir}/footer-${width}px.png` });
     }
   });
 
@@ -100,12 +117,13 @@ test.describe('Navigation & compliance', () => {
     await expect(page.locator('#lead-form form').first().locator('a[href="/privacy"]')).toHaveText('سياسة الخصوصية');
   });
 
-  test('unit select has exactly the 5 data-based options (no 1-bedroom / studio)', async ({ page }) => {
+  test('unit select starts with 88 m² option and has the 6 options', async ({ page }) => {
     await page.goto(`${PLAIN}/`);
     const select = page.locator('#lead-form select[name=unit]').first();
     await select.waitFor(); // form chunk is lazy-loaded
     const opts = await select.locator('option:not([disabled])').allTextContents();
     expect(opts.map((o) => o.trim())).toEqual([
+      'شقة (تبدأ من 88 م²)',
       'غرفتين (106–123 م²)',
       '3 غرف (131–257 م²)',
       'دوبلكس (حتى 479 م²)',
@@ -114,6 +132,43 @@ test.describe('Navigation & compliance', () => {
     ]);
     const all = (await page.content()).replace(/<[^>]+>/g, ' ');
     expect(all).not.toMatch(/ستوديو|استوديو|غرفة واحدة/);
+  });
+
+  test('/units page has 88 m² card + filter ("الكل" and "مساحات صغيرة") and no prices', async ({ page }) => {
+    await page.goto(`${PLAIN}/units`);
+    await expect(page.locator('#units')).toContainText('شقة (تبدأ من 88 م²)');
+    const smallTab = page.locator('#units [role="tab"]', { hasText: 'مساحات صغيرة' });
+    await expect(smallTab).toBeVisible();
+    await smallTab.click();
+    await expect(page.locator('#units article')).toHaveCount(1);
+    await expect(page.locator('#units article').first()).toContainText('شقة (تبدأ من 88 م²)');
+  });
+
+  test('/register and /contact pages render required elements and track call/whatsapp clicks', async ({ page }) => {
+    await page.goto(`${PLAIN}/register`);
+    await expect(page.locator('h1')).toContainText('سجّل اهتمامك بكمبوند مروج سموحة');
+    await expect(page.locator('body')).toContainText('من 88 م² حتى 479 م²');
+    await expect(page.locator('#lead-form input[type="hidden"][name="source_page"]')).toHaveValue('register');
+
+    await page.goto(`${PLAIN}/contact`);
+    await expect(page.locator('h1')).toContainText('اتصل بنا');
+    await expect(page.locator('body')).toContainText('هذا الموقع تسويقي ولا يمثل الموقع الرسمي للمطور');
+    await expect(page.locator('body')).toContainText('من 88 م² حتى 479 م²');
+    await expect(page.locator('#lead-form input[type="hidden"][name="source_page"]')).toHaveValue('contact');
+    await expect(page.locator('#lead-form textarea[name="message"]')).toHaveAttribute('maxlength', '500');
+
+    // Click tracking on tap-to-call and WhatsApp
+    await page.evaluate(() => {
+      window.dataLayer = [];
+      document.querySelectorAll('a[href^="tel:"], a[href*="wa.me"]').forEach((a) =>
+        a.addEventListener('click', (e) => e.preventDefault()),
+      );
+    });
+    await page.locator('section a[href^="tel:"]').first().click();
+    await page.locator('section a[href*="wa.me"]').first().click();
+    const events = await page.evaluate(() => (window.dataLayer as { event?: string }[]).map((e) => e.event));
+    expect(events).toContain('click_call');
+    expect(events).toContain('click_whatsapp');
   });
 });
 

@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from '../i18n/LanguageContext';
 import { SITE, telLink, unitOptions } from '../config/site';
 import { PhoneField, computePhone, type PhoneValue } from './PhoneField';
@@ -16,6 +16,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 interface Props {
   /** where the form is placed (sent with the lead + analytics) */
   location: string;
+  /** source_page hidden field & payload value (e.g. 'register', 'contact') */
+  sourcePage?: string;
+  /** show the optional Message textarea (used on /contact) */
+  showMessage?: boolean;
   variant?: 'full' | 'compact';
   title?: string;
   subtitle?: string;
@@ -24,14 +28,22 @@ interface Props {
 
 type Errors = Partial<Record<'name' | 'phone' | 'email' | 'unit' | 'form', string>>;
 
-export function LeadForm({ location, variant = 'full', title, subtitle, dark }: Props) {
+function defaultSourcePage(pathname: string): string {
+  const clean = pathname.replace(/^\/+|\/+$/g, '');
+  return clean || 'home';
+}
+
+export function LeadForm({ location, sourcePage, showMessage = false, variant = 'full', title, subtitle, dark }: Props) {
   const { u, t, lang } = useLang();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const resolvedSourcePage = sourcePage || defaultSourcePage(pathname);
   const uid = useId().replace(/:/g, '');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState<PhoneValue>(() => computePhone('eg', ''));
   const [email, setEmail] = useState('');
   const [unit, setUnit] = useState('');
+  const [message, setMessage] = useState('');
   const [hp, setHp] = useState(''); // honeypot
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
@@ -81,6 +93,8 @@ export function LeadForm({ location, variant = 'full', title, subtitle, dark }: 
       phone_country: phone.iso2.toUpperCase(),
       email: email.trim(),
       unit,
+      message: message.trim().slice(0, 500),
+      source_page: resolvedSourcePage,
       website: hp, // honeypot
       page_url: window.location.href,
       referrer: attr.initial_referrer || document.referrer || '',
@@ -145,6 +159,7 @@ export function LeadForm({ location, variant = 'full', title, subtitle, dark }: 
     if (name.trim()) lines.push(`${u('name')}: ${name.trim()}`);
     if (phone.e164) lines.push(`${u('phone')}: ${phone.e164}`);
     if (unit) lines.push(`${u('unit')}: ${unit}`);
+    if (message.trim()) lines.push(`${u('message')}: ${message.trim().slice(0, 500)}`);
     return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
   };
 
@@ -155,6 +170,7 @@ export function LeadForm({ location, variant = 'full', title, subtitle, dark }: 
 
   return (
     <form onSubmit={onSubmit} noValidate className="relative" aria-label={title || u('formTitle')} data-form-location={location}>
+      <input type="hidden" name="source_page" value={resolvedSourcePage} />
       {(title || variant === 'full') && (
         <div className="mb-5">
           <h3 className={`text-xl font-extrabold md:text-2xl ${dark ? 'text-white' : 'text-brand-900'}`}>{title || u('formTitle')}</h3>
@@ -265,6 +281,26 @@ export function LeadForm({ location, variant = 'full', title, subtitle, dark }: 
             </p>
           )}
         </div>
+
+        {/* Message (optional, shown on /contact) */}
+        {showMessage && (
+          <div className={variant === 'full' ? 'md:col-span-2' : ''}>
+            <label htmlFor={`${uid}-message`} className={`mb-1.5 block text-sm font-bold ${label}`}>
+              {u('message')} <span className={`text-xs font-normal ${dark ? 'text-white/60' : 'text-stone-500'}`}>{u('optional')}</span>
+            </label>
+            <textarea
+              id={`${uid}-message`}
+              name="message"
+              rows={3}
+              maxLength={500}
+              className={inputCls()}
+              placeholder={u('messagePh')}
+              value={message}
+              onChange={(e) => setMessage(e.target.value.slice(0, 500))}
+              onFocus={onStart}
+            />
+          </div>
+        )}
       </div>
 
       {/* Honeypot — hidden from humans */}

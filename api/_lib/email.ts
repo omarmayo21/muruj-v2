@@ -6,12 +6,17 @@ import { CHANNEL_TIMEOUT_MS, withTimeout } from './channels.js';
 const esc = (s: string) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 let transporter: Transporter | null = null;
-function getTransporter() {
-  if (!transporter) {
+let cachedConfigKey = '';
+
+export function getTransporter(): Transporter {
+  const key = `${env.smtpHost}:${env.smtpPort}:${env.smtpUser}:${env.smtpPass}`;
+  if (!transporter || cachedConfigKey !== key) {
+    cachedConfigKey = key;
     transporter = nodemailer.createTransport({
       host: env.smtpHost,
       port: env.smtpPort,
-      secure: env.smtpPort === 465,
+      secure: env.smtpPort === 465, // true only for 465, false with STARTTLS for 587
+      requireTLS: env.smtpPort === 587,
       auth: { user: env.smtpUser, pass: env.smtpPass },
       connectionTimeout: 5000,
       greetingTimeout: 5000,
@@ -21,12 +26,26 @@ function getTransporter() {
   return transporter;
 }
 
+function hostedLogoUrl(pageUrl: string): string {
+  try {
+    const u = new URL(pageUrl);
+    if (u.protocol === 'http:' || u.protocol === 'https:') {
+      return `${u.origin}/logo-light.png`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return 'https://YOUR-DOMAIN.vercel.app/logo-light.png';
+}
+
 export function buildLeadEmail(l: LeadRecord) {
   const rows: [string, string, boolean?][] = [
     ['الاسم', l.name, true],
     ['رقم التليفون', l.phone, true],
     ['البريد الإلكتروني', l.email || '—'],
     ['الوحدة / المساحة', l.unit, true],
+    ['الرسالة (Message)', l.message || '—'],
+    ['صفحة المصدر (Source Page)', l.source_page || l.form_location || '—'],
     ['رقم الطلب (Lead ID)', l.lead_id || '—'],
     ['وقت التسجيل (القاهرة)', l.timestamp],
     ['مكان الفورم', l.form_location || '—'],
@@ -52,15 +71,17 @@ export function buildLeadEmail(l: LeadRecord) {
     )
     .join('');
   const wa = l.phone.replace(/\D/g, '');
-  const html = `<!doctype html><html lang="ar" dir="rtl"><body style="margin:0;background:#f1f5f2;font-family:Tahoma,Arial,sans-serif">
+  const logoUrl = hostedLogoUrl(l.page_url);
+  const html = `<!doctype html><html lang="ar" dir="rtl"><body style="margin:0;background:#f4f7ef;font-family:Tahoma,Arial,sans-serif">
 <div style="max-width:680px;margin:0 auto;padding:24px 12px" dir="rtl">
-  <div style="background:#163b2c;color:#fff;padding:20px 24px;border-radius:14px 14px 0 0">
-    <div style="color:#d2b05e;font-size:13px;font-weight:700">كمبوند مروج سموحة</div>
+  <div style="background:#2c381b;color:#fff;padding:20px 24px;border-radius:14px 14px 0 0">
+    <img src="${esc(logoUrl)}" alt="شعار كمبوند مروج" width="124" height="78" style="display:block;height:48px;width:auto;margin-bottom:8px" />
+    <div style="color:#8ad687;font-size:13px;font-weight:700">كمبوند مروج سموحة</div>
     <h1 style="margin:6px 0 0;font-size:22px">عميل جديد: ${esc(l.name)}</h1>
   </div>
   <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;background:#fff;font-size:14px" dir="rtl">${tr}</table>
   <div style="background:#fff;padding:18px 24px;border-radius:0 0 14px 14px;text-align:center">
-    <a href="tel:${esc(l.phone)}" style="display:inline-block;background:#163b2c;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:700;margin:4px">اتصال بالعميل</a>
+    <a href="tel:${esc(l.phone)}" style="display:inline-block;background:#2c381b;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:700;margin:4px">اتصال بالعميل</a>
     <a href="https://wa.me/${esc(wa)}" style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:700;margin:4px">واتساب العميل</a>
   </div>
 </div></body></html>`;
@@ -76,10 +97,14 @@ export async function sendLeadEmail(l: LeadRecord) {
 async function sendMail(subject: string, html: string, text: string, l: LeadRecord) {
   await getTransporter().sendMail({
     from: { name: 'Muruj Leads', address: env.emailFrom },
-    to: env.emailTo,
+    to: env.emailToList,
     replyTo: l.email || undefined,
     subject,
     html,
     text,
   });
+}
+
+export async function verifyEmailConnection(): Promise<void> {
+  await withTimeout(getTransporter().verify(), CHANNEL_TIMEOUT_MS, 'email_verify');
 }
