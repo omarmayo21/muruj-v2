@@ -1,0 +1,46 @@
+{
+  "name": "muruj-compound-landing",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p api/tsconfig.json",
+    "images": "python3 scripts/process-images.py",
+    "serve:local": "npm run build && node scripts/local-server.mjs",
+    "test:lead": "node scripts/test-lead.mjs",
+    "api:local": "node scripts/local-server.mjs",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@googleapis/sheets": "^14.0.0",
+    "libphonenumber-js": "^1.13.16",
+    "nodemailer": "^10.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-international-phone": "^4.8.0",
+    "react-router-dom": "^7.18.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/node": "^20.19.43",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "esbuild": "^0.27.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.6"
+  },
+  "overrides": {
+    "rimraf": "^6.1.4"
+  }
+}

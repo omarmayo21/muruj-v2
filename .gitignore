@@ -1,0 +1,21 @@
+# dependencies & build
+node_modules
+dist
+.playwright-dist*
+playwright-report
+test-results
+
+# Vercel
+.vercel
+
+# environment files — NEVER commit secrets
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+
+# misc
+*.log
+*.tsbuildinfo
+.DS_Store
